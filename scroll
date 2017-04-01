@@ -15,6 +15,7 @@ if len(sys.argv) == 1:
     sys.exit()
 
 args = sys.argv[1:]
+args = [arg.lower() for arg in args]
 scroll = False
 delay = 1
 cmd = "xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME"
