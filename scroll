@@ -11,7 +11,7 @@ def scroll_off():
     os.system("synclient VertTwoFingerScroll=0")
 
 if len(sys.argv) == 1:
-    print("Usage: scroll [arg1] [arg2] ...")
+    print("Usage: scroll <string1> [<string2> <string3>...]")
     sys.exit()
 
 args = sys.argv[1:]
