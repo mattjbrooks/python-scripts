@@ -16,7 +16,7 @@ if len(sys.argv) == 1:
 
 args = sys.argv[1:]
 args = [arg.lower() for arg in args]
-scroll = False
+scroll_enabled = False
 delay = 1
 cmd = "xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME"
 
@@ -32,11 +32,11 @@ while True:
     for arg in args:
         if arg in active_window_name:
             found_arg = True
-            if not scroll:
+            if not scroll_enabled:
                 scroll_on()
-                scroll = True
+                scroll_enabled = True
             break
-    if scroll and not found_arg:
+    if scroll_enabled and not found_arg:
         scroll_off()
-        scroll = False
+        scroll_enabled = False
     sleep(delay)
