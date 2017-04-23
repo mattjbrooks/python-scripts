@@ -1,0 +1,29 @@
+#! /usr/bin/python3
+
+"""
+Just a short script to output the status of multiple git repositories within
+one folder.  Does not recurse into subdirectories.
+"""
+
+import os
+
+paths = []
+cwd = os.getcwd()
+
+for name in os.listdir():
+     path_to_name = os.path.join(cwd, name)
+     if os.path.isdir(path_to_name):
+         paths.append(path_to_name)
+
+found_repo = False
+
+for path in paths:
+    os.chdir(path)
+    if os.path.isdir(os.path.join(path, ".git")):
+         found_repo = True
+         print(path)
+         print("*"*len(path))
+         print(os.popen("git status").read())
+
+if not found_repo:
+    print("No repository directories found")
