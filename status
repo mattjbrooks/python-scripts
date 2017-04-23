@@ -6,6 +6,19 @@ one folder.  Does not recurse into subdirectories.
 """
 
 import os
+import sys
+
+use_color = False
+
+if len(sys.argv) > 1:
+    flags = sys.argv[1:]
+    if flags == ['-c'] or flags == ['--color']:
+        use_color = True
+        ANSI_cyan = "\x1b[36m"
+        ANSI_reset = "\x1b[0m"
+    else:
+        print("Usage: status [-c|--color]")
+        sys.exit()
 
 paths = []
 cwd = os.getcwd()
@@ -20,10 +33,12 @@ found_repo = False
 for path in paths:
     os.chdir(path)
     if os.path.isdir(os.path.join(path, ".git")):
-         found_repo = True
-         print(path)
-         print("*"*len(path))
-         print(os.popen("git status").read())
+        found_repo = True
+        if use_color:
+            print(ANSI_cyan + path + ANSI_reset)
+        else:
+            print("----- " + path + " -----")
+        print(os.popen("git status").read())
 
 if not found_repo:
     print("No repository directories found")
