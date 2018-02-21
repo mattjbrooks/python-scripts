@@ -23,7 +23,7 @@ cmd = "xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM
 scroll_off()
 
 while True:
-    cmd_output = os.popen(cmd).read().lower().split('"')
+    cmd_output = os.popen(cmd).read().lower().split('"', maxsplit = 1)
     if len(cmd_output) > 1:
         active_window_name = cmd_output[1]
     else:
