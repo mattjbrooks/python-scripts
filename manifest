@@ -27,7 +27,7 @@ def write_manifest(folder_name, manifest):
 def manifest(directory):
     for folder_name, subfolders, filenames in os.walk(directory):
         relative_path = os.path.relpath(folder_name, directory)
-        if relative_path.startswith('.manifest'):
+        if relative_path.startswith(MANIFEST_DIRECTORY):
             continue
         manifest = {}
         for filename in filenames:
