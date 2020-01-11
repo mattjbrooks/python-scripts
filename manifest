@@ -1,0 +1,49 @@
+#! /usr/bin/python3
+
+import hashlib
+import os
+import json
+import datetime
+
+day = datetime.datetime.now().strftime('%Y-%m-%d')
+
+MANIFEST_DIRECTORY = '.manifest'
+MANIFEST_FILENAME = f"{day}.json"
+
+def hashfile(filepath, blocksize = 65536):
+    hash_obj = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        chunk = f.read(blocksize)
+        while len(chunk):
+            hash_obj.update(chunk)
+            chunk = f.read(blocksize)
+    return(hash_obj.hexdigest())
+
+def write_manifest(folder_name, manifest):
+    filepath = os.path.join(folder_name, MANIFEST_FILENAME)
+    with open(filepath, 'w') as f:
+        json.dump(manifest, f)
+
+def manifest(directory):
+    for folder_name, subfolders, filenames in os.walk(directory):
+        relative_path = os.path.relpath(folder_name, directory)
+        if relative_path.startswith('.manifest'):
+            continue
+        manifest = {}
+        for filename in filenames:
+            if filename == 'manifest':
+                continue
+            filepath = os.path.join(folder_name, filename)
+            manifest[filename] = hashfile(filepath)
+        if relative_path == ".":
+            write_directory = MANIFEST_DIRECTORY
+        else:
+            write_directory = os.path.join(MANIFEST_DIRECTORY, relative_path)
+        if not os.path.exists(write_directory):
+            os.mkdir(write_directory)
+        if len(manifest):
+            write_manifest(write_directory, manifest)
+        print(folder_name)
+    print("Done")
+
+manifest(os.getcwd())
