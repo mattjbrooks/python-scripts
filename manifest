@@ -9,6 +9,7 @@ day = datetime.datetime.now().strftime('%Y-%m-%d')
 
 MANIFEST_DIRECTORY = '.manifest'
 MANIFEST_FILENAME = f"{day}.json"
+SCRIPT_FILENAME = os.path.basename(__file__)
 
 def hashfile(filepath, blocksize = 65536):
     hash_obj = hashlib.sha256()
@@ -31,7 +32,7 @@ def manifest(directory):
             continue
         manifest = {}
         for filename in filenames:
-            if filename == 'manifest':
+            if filename == SCRIPT_FILENAME:
                 continue
             filepath = os.path.join(folder_name, filename)
             manifest[filename] = hashfile(filepath)
