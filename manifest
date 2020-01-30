@@ -5,10 +5,10 @@ import os
 import json
 import datetime
 
-day = datetime.datetime.now().strftime('%Y-%m-%d')
+date = datetime.datetime.now().strftime('%Y-%m-%d')
 
 MANIFEST_DIRECTORY = '.manifest'
-MANIFEST_FILENAME = f"{day}.json"
+MANIFEST_FILENAME = f"{date}.json"
 SCRIPT_FILENAME = os.path.basename(__file__)
 
 def hashfile(filepath, blocksize = 65536):
