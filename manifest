@@ -42,8 +42,7 @@ def manifest(directory):
             write_directory = os.path.join(MANIFEST_DIRECTORY, relative_path)
         if not os.path.exists(write_directory):
             os.mkdir(write_directory)
-        if len(manifest):
-            write_manifest(write_directory, manifest)
+        write_manifest(write_directory, manifest)
         print(folder_name)
     print("Done")
 
