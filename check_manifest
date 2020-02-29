@@ -22,6 +22,19 @@ class Manifest():
         self.recorded_but_missing_files = []
         self.recorded_but_missing_folders = []
 
+    def __str__(self):
+        return (
+            f"Manifest exists: {self.manifest_exists}\n"
+            f"Manifest folders: {self.manifest_folders}\n"
+            f"Manifest folders with manifest file: {self.manifest_folders_with_manifest_file}\n"
+            f"Manifest folders with no manifest files: {self.manifest_folders_with_no_manifest_file}\n"
+            f"Unrecorded folders: {self.unrecorded_folders}\n"
+            f"Unrecorded files: {self.unrecorded_files}\n"
+            f"Recorded but missing folders: {self.recorded_but_missing_folders}\n"
+            f"Recorded but missing files: {self.recorded_but_missing_files}\n"
+            f"Hash mismatches: {self.hash_mismatches}"
+        )
+
     def check_manifest(self):
         if not os.path.exists(self.manifest_path):
             self.manifest_exists = False
@@ -60,16 +73,6 @@ class Manifest():
             filepath = os.path.join(relative_path, filename)
             self.unrecorded_files.append(filepath)
 
-    @staticmethod
-    def hashfile(filepath, blocksize = 65536):
-        hash_obj = hashlib.sha256()
-        with open(filepath, 'rb') as f:
-            chunk = f.read(blocksize)
-            while len(chunk):
-                hash_obj.update(chunk)
-                chunk = f.read(blocksize)
-        return(hash_obj.hexdigest())
-
     def check_manifest_files(self):
         for folder in self.manifest_folders_with_manifest_file:
             manifest = self.load_manifest(folder)
@@ -77,13 +80,6 @@ class Manifest():
             if not os.path.isdir(matching_folder):
                 self.recorded_but_missing_folders.append(matching_folder)
             self.check_dictionary(manifest, matching_folder)
-
-    @staticmethod
-    def load_manifest(folder):
-        filepath = os.path.join(folder, MANIFEST_FILENAME)
-        with open(filepath, 'r') as f:
-            manifest = json.load(f)
-        return manifest
 
     def check_dictionary(self, manifest, folder):
         for filename in manifest:
@@ -101,19 +97,23 @@ class Manifest():
                     if entry.is_file() and entry.name not in manifest:
                         filepath = os.path.join(folder, entry.name)
                         self.unrecorded_files.append(filepath)
+    @staticmethod
+    def load_manifest(folder):
+        filepath = os.path.join(folder, MANIFEST_FILENAME)
+        with open(filepath, 'r') as f:
+            manifest = json.load(f)
+        return manifest
 
-    def __str__(self):
-        return (
-            f"Manifest exists: {self.manifest_exists}\n"
-            f"Manifest folders: {self.manifest_folders}\n"
-            f"Manifest folders with manifest file: {self.manifest_folders_with_manifest_file}\n"
-            f"Manifest folders with no manifest files: {self.manifest_folders_with_no_manifest_file}\n"
-            f"Unrecorded folders: {self.unrecorded_folders}\n"
-            f"Unrecorded files: {self.unrecorded_files}\n"
-            f"Recorded but missing folders: {self.recorded_but_missing_folders}\n"
-            f"Recorded but missing files: {self.recorded_but_missing_files}\n"
-            f"Hash mismatches: {self.hash_mismatches}"
-        )
+    @staticmethod
+    def hashfile(filepath, blocksize = 65536):
+        hash_obj = hashlib.sha256()
+        with open(filepath, 'rb') as f:
+            chunk = f.read(blocksize)
+            while len(chunk):
+                hash_obj.update(chunk)
+                chunk = f.read(blocksize)
+        return(hash_obj.hexdigest())
+
 
 def check_date():
     if len(sys.argv) != 2:
@@ -133,9 +133,11 @@ def check_date():
         error_msg()
     return date
 
+
 def error_msg():
     print("Usage: check_manifests YYYY-MM-DD")
     sys.exit()
+
 
 date = check_date()
 MANIFEST_ROOT = '.manifest'
