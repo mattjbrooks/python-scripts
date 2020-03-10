@@ -1,10 +1,10 @@
 #! /usr/bin/python3
 
 import os
-import manifest
 import parser
+from manifest import Report
 
 date = parser.check_date()
 manifest_filename = f"{date}.json"
-manifest = manifest.Manifest(os.getcwd(), manifest_filename)
-manifest.check_manifest()
+report = Report(os.getcwd(), manifest_filename)
+report.check_manifest()

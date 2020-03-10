@@ -7,18 +7,8 @@ class Manifest():
     def __init__(self, base_directory, manifest_filename):
         self.base_directory = base_directory
         self.manifest_filename = manifest_filename
-        self.manifest_path = os.path.join(base_directory, config.MANIFEST_ROOT)
-        self.manifest_exists = None
-        self.hash_mismatches = []
-        self.manifest_folders = []
-        self.manifest_folders_with_manifest_file = []
-        self.manifest_folders_with_no_manifest_file = []
-        self.unrecorded_files = []
-        self.unrecorded_folders = []
-        self.recorded_but_missing_files = []
-        self.recorded_but_missing_folders = []
 
-    def create_manifest(self):
+    def create_manifest_files(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
             relative_path = os.path.relpath(folder_name, self.base_directory)
             if relative_path.startswith(config.MANIFEST_ROOT):
@@ -33,9 +23,29 @@ class Manifest():
                 write_directory = os.path.join(config.MANIFEST_ROOT, relative_path)
             if not os.path.exists(write_directory):
                 os.mkdir(write_directory)
-            self._write_manifest(write_directory, manifest)
+            self._write_manifest_file(write_directory, manifest)
             print(folder_name)
         print("Done")
+
+    def _write_manifest_file(self, folder, manifest):
+        filepath = os.path.join(folder, self.manifest_filename)
+        with open(filepath, 'w') as f:
+            json.dump(manifest, f)
+
+class Report():
+    def __init__(self, base_directory, manifest_filename):
+        self.base_directory = base_directory
+        self.manifest_filename = manifest_filename
+        self.manifest_path = os.path.join(base_directory, config.MANIFEST_ROOT)
+        self.manifest_exists = None
+        self.hash_mismatches = []
+        self.manifest_folders = []
+        self.manifest_folders_with_manifest_file = []
+        self.manifest_folders_with_no_manifest_file = []
+        self.unrecorded_files = []
+        self.unrecorded_folders = []
+        self.recorded_but_missing_files = []
+        self.recorded_but_missing_folders = []
 
     def check_manifest(self):
         self.manifest_exists = os.path.exists(self.manifest_path)
@@ -75,7 +85,7 @@ class Manifest():
 
     def _check_manifest_files(self):
         for folder in self.manifest_folders_with_manifest_file:
-            manifest = self._load_manifest(folder)
+            manifest = self._load_manifest_file(folder)
             matching_folder = os.path.relpath(folder, config.MANIFEST_ROOT)
             if not os.path.isdir(matching_folder):
                 self.recorded_but_missing_folders.append(matching_folder)
@@ -98,23 +108,8 @@ class Manifest():
                         filepath = os.path.join(folder, entry.name)
                         self.unrecorded_files.append(filepath)
 
-    def _load_manifest(self, folder):
+    def _load_manifest_file(self, folder):
         filepath = os.path.join(folder, self.manifest_filename)
         with open(filepath, 'r') as f:
             manifest = json.load(f)
         return manifest
-
-    def _write_manifest(self, folder, manifest):
-        filepath = os.path.join(folder, self.manifest_filename)
-        with open(filepath, 'w') as f:
-            json.dump(manifest, f)
-
-    @staticmethod
-    def hashfile(filepath, blocksize = 65536):
-        hash_obj = hashlib.sha256()
-        with open(filepath, 'rb') as f:
-            chunk = f.read(blocksize)
-            while len(chunk):
-                hash_obj.update(chunk)
-                chunk = f.read(blocksize)
-        return(hash_obj.hexdigest())

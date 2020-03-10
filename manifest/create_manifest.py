@@ -2,9 +2,9 @@
 
 import datetime
 import os
-import manifest
+from manifest import Manifest
 
 date = datetime.datetime.now().strftime('%Y-%m-%d')
 manifest_filename = f"{date}.json"
-manifest = manifest.Manifest(os.getcwd(), manifest_filename)
-manifest.create_manifest()
+manifest = Manifest(os.getcwd(), manifest_filename)
+manifest.create_manifest_files()
