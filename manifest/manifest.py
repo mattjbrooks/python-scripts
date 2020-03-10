@@ -47,6 +47,13 @@ class Report():
         self.recorded_but_missing_files = []
         self.recorded_but_missing_folders = []
 
+
+    def __str__(self):
+        return '\n'.join(
+                [f'{key}: {value}' for key, value in self.__dict__.items()]
+        )
+
+
     def check_manifest(self):
         self.manifest_exists = os.path.exists(self.manifest_path)
         self._walk_manifest()
