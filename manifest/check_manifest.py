@@ -8,3 +8,4 @@ date = parser.check_date()
 manifest_filename = f"{date}.json"
 report = Report(os.getcwd(), manifest_filename)
 report.check_manifest()
+print(report)
