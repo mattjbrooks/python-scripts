@@ -1,7 +1,7 @@
-import hashlib
 import json
 import os
 import config
+from hash_functions import hashfile
 
 class Manifest():
     def __init__(self, base_directory, manifest_filename):
@@ -26,7 +26,7 @@ class Manifest():
             manifest = {}
             for filename in filenames:
                 filepath = os.path.join(folder_name, filename)
-                manifest[filename] = self.hashfile(filepath)
+                manifest[filename] = hashfile(filepath)
             if relative_path == ".":
                 write_directory = config.MANIFEST_ROOT
             else:
@@ -86,7 +86,7 @@ class Manifest():
             filepath = os.path.join(folder, filename)
             if os.path.isfile(filepath):
                 manifest_hash = manifest[filename]
-                file_hash = self.hashfile(filepath)
+                file_hash = hashfile(filepath)
                 if manifest_hash != file_hash:
                     self.hash_mismatches.append(filepath)
             else:
