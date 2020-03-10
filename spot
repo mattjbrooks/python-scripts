@@ -1,0 +1,71 @@
+#! /usr/bin/python3
+
+"""
+Just a quick wrapper around find.  Searches from the current directory.
+"""
+
+import os
+import sys
+
+usage_message = """\
+Usage: spot [OPTION] NAME
+Search for NAME from the current directory using find, discarding errors.
+
+-d, --directory     find directory NAME (otherwise default to finding files)
+-i, --ignore-case   case insensitive search\
+"""
+
+flags = {
+    "help": ["-h", "--help"],
+    "directory": ["-d", "--directory"],
+    "ignore case": ["-i", "--ignore-case"]
+}
+
+num_of_args = len(sys.argv)
+
+def uses_flag(flag):
+    """Returns True if flag in sys.argv[1:]"""
+    if num_of_args == 1:
+        return False
+    user_input = sys.argv[1:]
+    for arg in user_input:
+        if arg in flags[flag]:
+            return True
+
+def num_of_flags():
+    """Returns the number of flags in sys.argv[1:]"""
+    user_input = sys.argv[1:]
+    count = 0
+    for arg in user_input:
+        for value in flags.values():
+           if arg in value:
+               count += 1
+    return count
+
+def is_flag(arg):
+    """Returns True if arg is a flag"""
+    for value in flags.values():
+        if arg in value:
+            return True
+    return False
+
+def display_help():
+    """Displays the usage message and exits"""
+    print(usage_message)
+    sys.exit()
+
+def find(name):
+    """Composes the find command to use, and outputs the result of calling it"""
+    cmd = "find . -type "
+    cmd += "d " if uses_flag("directory") else "f "
+    cmd += "-iname " if uses_flag("ignore case")  else "-name "
+    cmd += "'{}' 2>/dev/null".format(name)
+    print(os.popen(cmd).read(), end='')
+    sys.exit()
+
+name = sys.argv[-1]
+
+if uses_flag("help") or is_flag(name) or num_of_args != num_of_flags() + 2:
+    display_help()
+else:
+    find(name)
