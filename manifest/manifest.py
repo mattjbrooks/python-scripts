@@ -8,7 +8,7 @@ class Manifest():
         self.base_directory = base_directory
         self.manifest_filename = manifest_filename
 
-    def create_manifest_files(self):
+    def create_manifest(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
             relative_path = os.path.relpath(folder_name, self.base_directory)
             if relative_path.startswith(config.MANIFEST_ROOT):
