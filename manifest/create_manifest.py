@@ -1,10 +1,10 @@
 #! /usr/bin/python3
 
+import datetime
 import os
 import manifest
-import parser
 
-date = parser.check_date()
+date = datetime.datetime.now().strftime('%Y-%m-%d')
 manifest_filename = f"{date}.json"
 manifest = manifest.Manifest(os.getcwd(), manifest_filename)
-manifest.check_manifest()
+manifest.create_manifest()
