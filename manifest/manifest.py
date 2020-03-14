@@ -1,8 +1,8 @@
 import datetime
+import hashlib
 import json
 import os
 import config
-from hash_functions import hashfile
 
 
 class Manifest():
@@ -127,3 +127,13 @@ class Report():
 
 def current_date():
     return datetime.datetime.now().strftime('%Y-%m-%d')
+
+
+def hashfile(filepath, blocksize = 65536):
+    hash_obj = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        chunk = f.read(blocksize)
+        while len(chunk):
+            hash_obj.update(chunk)
+            chunk = f.read(blocksize)
+    return(hash_obj.hexdigest())
