@@ -1,12 +1,15 @@
+import datetime
 import json
 import os
 import config
 from hash_functions import hashfile
 
+
 class Manifest():
-    def __init__(self, base_directory, manifest_filename):
+    def __init__(self, base_directory=os.getcwd(), manifest_filename=None):
         self.base_directory = base_directory
-        self.manifest_filename = manifest_filename
+        self.manifest_filename = f"{current_date()}.json" if (manifest_filename
+                == None) else manifest_filename
 
     def create_manifest(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
@@ -32,10 +35,12 @@ class Manifest():
         with open(filepath, 'w') as f:
             json.dump(manifest, f)
 
+
 class Report():
-    def __init__(self, base_directory, manifest_filename):
+    def __init__(self, base_directory=os.getcwd(), manifest_filename=None):
         self.base_directory = base_directory
-        self.manifest_filename = manifest_filename
+        self.manifest_filename = f"{current_date()}.json" if (manifest_filename
+                == None) else manifest_filename
         self.manifest_path = os.path.join(base_directory, config.MANIFEST_ROOT)
         self.manifest_exists = None
         self.hash_mismatches = []
@@ -47,19 +52,17 @@ class Report():
         self.recorded_but_missing_files = []
         self.recorded_but_missing_folders = []
 
-
     def __str__(self):
         return '\n'.join(
                 [f'{key}: {value}' for key, value in self.__dict__.items()]
         )
-
 
     def check_manifest(self):
         self.manifest_exists = os.path.exists(self.manifest_path)
         self._walk_manifest()
         self._walk_base_directory()
         self._check_manifest_files()
-    
+
     def _walk_manifest(self):
         for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
             self.manifest_folders.append(folder_name)
@@ -120,3 +123,7 @@ class Report():
         with open(filepath, 'r') as f:
             manifest = json.load(f)
         return manifest
+
+
+def current_date():
+    return datetime.datetime.now().strftime('%Y-%m-%d')
