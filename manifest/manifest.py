@@ -57,11 +57,56 @@ class Report():
                 [f'{key}: {value}' for key, value in self.__dict__.items()]
         )
 
+    def log(self, use_color=False):
+        ANSI_cyan = "\x1b[36m"
+        ANSI_green = "\x1b[32m"
+        ANSI_red = "\x1b[31m"
+        ANSI_reset = "\x1b[0m"
+        on = ANSI_cyan if use_color else ''
+        ok = ANSI_green if use_color else ''
+        warn = ANSI_red if use_color else ''
+        off = ANSI_reset if use_color else ''
+        if not self.manifest_exists:
+            msg = (
+                    f"Looking for {on}{self.manifest_path}{off}\n"
+                    f"Manifest directory not found"
+            )
+            return msg
+        manifest_errors = "\n".join(self.manifest_folders_with_no_manifest_file)
+        unrecorded_files = "\n".join(self.unrecorded_files)
+        unrecorded_folders = "\n".join(self.unrecorded_folders)
+        missing_files = "\n".join(self.recorded_but_missing_files)
+        missing_folders = "\n".join(self.recorded_but_missing_folders)
+        hash_mismatches = "\n".join(self.hash_mismatches)
+        msg = ''
+        if unrecorded_files:
+            msg += f"{on}Unrecorded files:{off}\n{unrecorded_files}\n"
+        if unrecorded_folders:
+            msg += f"{on}Unrecorded folders:{off}\n{unrecorded_folders}\n"
+        if missing_files:
+            msg +=  f"{on}Missing files:{off}\n{missing_files}\n"
+        if missing_folders:
+            msg += f"{on}Missing folders:{off}\n{missing_folders}\n"
+        if hash_mismatches:
+            msg += f"{on}Hash mismatches:{off}\n{hash_mismatches}\n"
+        if manifest_errors:
+            plural = 's' if len(self.manifest_folders_with_no_manifest_file) > 1 else ''
+            msg += (
+                    f"{warn}WARNING: Manifest error - "
+                    f"no manifest file for folder{plural}:{off}\n"
+                    f"{manifest_errors}"
+            )
+        msg = msg.rstrip('\n')
+        if not msg:
+            msg = f"No issues found - {ok}matches manifest{off}"
+        return msg
+
     def check_manifest(self):
         self.manifest_exists = os.path.exists(self.manifest_path)
-        self._walk_manifest()
-        self._walk_base_directory()
-        self._check_manifest_files()
+        if self.manifest_exists:
+            self._walk_manifest()
+            self._walk_base_directory()
+            self._check_manifest_files()
 
     def _walk_manifest(self):
         for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
