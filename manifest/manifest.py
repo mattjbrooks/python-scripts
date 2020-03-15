@@ -20,7 +20,7 @@ class Manifest():
             for filename in filenames:
                 filepath = os.path.join(folder_name, filename)
                 manifest[filename] = hashfile(filepath)
-            if relative_path == ".":
+            if relative_path == '.':
                 write_directory = config.MANIFEST_ROOT
             else:
                 write_directory = os.path.join(config.MANIFEST_ROOT, relative_path)
@@ -54,7 +54,7 @@ class Report():
 
     def __str__(self):
         return '\n'.join(
-                [f'{key}: {value}' for key, value in self.__dict__.items()]
+                [f"{key}: {value}" for key, value in self.__dict__.items()]
         )
 
     def log(self, color=False):
@@ -62,23 +62,23 @@ class Report():
         ANSI_green = "\x1b[32m"
         ANSI_red = "\x1b[31m"
         ANSI_reset = "\x1b[0m"
-        on = ANSI_cyan if color else ''
-        ok = ANSI_green if color else ''
-        warn = ANSI_red if color else ''
-        off = ANSI_reset if color else ''
+        on = ANSI_cyan if color else ""
+        ok = ANSI_green if color else ""
+        warn = ANSI_red if color else ""
+        off = ANSI_reset if color else ""
         if not self.manifest_exists:
             msg = (
                     f"Looking for {on}{self.manifest_path}{off}\n"
                     f"Manifest directory not found"
             )
             return msg
-        manifest_errors = "\n".join(self.manifest_folders_with_no_manifest_file)
-        unrecorded_files = "\n".join(self.unrecorded_files)
-        unrecorded_folders = "\n".join(self.unrecorded_folders)
-        missing_files = "\n".join(self.recorded_but_missing_files)
-        missing_folders = "\n".join(self.recorded_but_missing_folders)
-        hash_mismatches = "\n".join(self.hash_mismatches)
-        msg = ''
+        manifest_errors = '\n'.join(self.manifest_folders_with_no_manifest_file)
+        unrecorded_files = '\n'.join(self.unrecorded_files)
+        unrecorded_folders = '\n'.join(self.unrecorded_folders)
+        missing_files = '\n'.join(self.recorded_but_missing_files)
+        missing_folders = '\n'.join(self.recorded_but_missing_folders)
+        hash_mismatches = '\n'.join(self.hash_mismatches)
+        msg = ""
         if unrecorded_files:
             msg += f"{on}Unrecorded files:{off}\n{unrecorded_files}\n"
         if unrecorded_folders:
@@ -121,7 +121,7 @@ class Report():
             relative_path = os.path.relpath(folder_name, self.base_directory)
             if relative_path.startswith(config.MANIFEST_ROOT):
                 continue
-            if relative_path == ".":
+            if relative_path == '.':
                 manifest_path = config.MANIFEST_ROOT
             else:
                 manifest_path = os.path.join(config.MANIFEST_ROOT, relative_path)
@@ -171,7 +171,7 @@ class Report():
 
 
 def current_date():
-    return datetime.datetime.now().strftime('%Y-%m-%d')
+    return datetime.datetime.now().strftime("%Y-%m-%d")
 
 
 def hashfile(filepath, blocksize = 65536):
