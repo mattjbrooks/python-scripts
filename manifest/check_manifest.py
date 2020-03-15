@@ -5,8 +5,6 @@ import parser
 from manifest import Report
 
 date = parser.check_date()
-manifest_filename = f"{date}.json"
-report = Report(os.getcwd(), manifest_filename)
+report = Report(manifest_filename=f"{date}.json")
 report.check_manifest()
-log_txt = report.log(color=True)
-print(log_txt)
+print(report.log(color=True))
