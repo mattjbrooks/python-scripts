@@ -57,15 +57,15 @@ class Report():
                 [f'{key}: {value}' for key, value in self.__dict__.items()]
         )
 
-    def log(self, use_color=False):
+    def log(self, color=False):
         ANSI_cyan = "\x1b[36m"
         ANSI_green = "\x1b[32m"
         ANSI_red = "\x1b[31m"
         ANSI_reset = "\x1b[0m"
-        on = ANSI_cyan if use_color else ''
-        ok = ANSI_green if use_color else ''
-        warn = ANSI_red if use_color else ''
-        off = ANSI_reset if use_color else ''
+        on = ANSI_cyan if color else ''
+        ok = ANSI_green if color else ''
+        warn = ANSI_red if color else ''
+        off = ANSI_reset if color else ''
         if not self.manifest_exists:
             msg = (
                     f"Looking for {on}{self.manifest_path}{off}\n"

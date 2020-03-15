@@ -8,5 +8,5 @@ date = parser.check_date()
 manifest_filename = f"{date}.json"
 report = Report(os.getcwd(), manifest_filename)
 report.check_manifest()
-log_txt = report.log(use_color=True)
+log_txt = report.log(color=True)
 print(log_txt)
