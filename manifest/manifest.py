@@ -51,6 +51,7 @@ class Report():
         self.unrecorded_folders = []
         self.recorded_but_missing_files = []
         self.recorded_but_missing_folders = []
+        self._check_manifest()
 
     def __str__(self):
         return '\n'.join(
@@ -101,7 +102,7 @@ class Report():
             msg = f"No issues found - {ok}matches manifest{off}"
         return msg
 
-    def check_manifest(self):
+    def _check_manifest(self):
         self.manifest_exists = os.path.exists(self.manifest_path)
         if self.manifest_exists:
             self._walk_manifest()
