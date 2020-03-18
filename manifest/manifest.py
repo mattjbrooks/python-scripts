@@ -98,7 +98,7 @@ class Report():
         if hash_mismatches:
             msg += f"{on}Hash mismatches:{off}\n{hash_mismatches}\n"
         if manifest_errors:
-            plural = 's' if len(self.manifest_folders_with_no_manifest_file) > 1 else ''
+            plural = 's' if len(self.manifest_folders_with_no_manifest_file) > 1 else ""
             msg += (
                     f"{warn}WARNING: Manifest error - "
                     f"no manifest file for folder{plural}:{off}\n"
