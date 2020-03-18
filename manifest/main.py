@@ -59,7 +59,8 @@ def display_help():
 
     Commands:
         create          Create manifest in current directory
-        check [date]    Check manifest for date of format YY-MM-DD\
+        check [date]    Check manifest - accepts optional date of format YYYY-MM-DD 
+                        uses current date if none is given
     """
     print(help_msg)
     sys.exit()
