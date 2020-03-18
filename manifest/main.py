@@ -54,14 +54,12 @@ def display_date_format_msg():
 
 
 def display_help():
-    help_msg = """\
-    Usage: manifest <command> [<args>]
+    help_msg = """Usage: manifest <command> [<args>]
 
     Commands:
         create          Create manifest in current directory
         check [date]    Check manifest - accepts optional date of format YYYY-MM-DD 
-                        uses current date if none is given\
-    """
+                        uses current date if none is given"""
     print(help_msg)
     sys.exit()
 
