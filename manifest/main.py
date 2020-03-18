@@ -12,10 +12,7 @@ def main():
     if sys.argv[1] == "create" and len(sys.argv) == 2:
         create_manifest()
     elif sys.argv[1] == "check":
-        if len(sys.argv) == 3:
-            check_manifest()
-        else:
-            display_date_format_msg()
+        check_manifest()
     else:
         display_help()
 
@@ -26,8 +23,11 @@ def create_manifest():
 
 
 def check_manifest():
-    date = check_date(sys.argv[2])
-    report = Report(manifest_filename=f"{date}.json")
+    if len(sys.argv) == 3:
+        date = check_date(sys.argv[2])
+        report = Report(manifest_filename=f"{date}.json")
+    else:
+        report = Report()
     print(report.log(color=True))
 
 
