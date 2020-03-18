@@ -67,10 +67,17 @@ class Report():
         ok = ANSI_green if color else ""
         warn = ANSI_red if color else ""
         off = ANSI_reset if color else ""
-        if not self.manifest_exists:
+        if not os.path.exists(self.manifest_path):
             msg = (
                     f"Looking for {on}{self.manifest_path}{off}\n"
                     f"Manifest directory not found"
+            )
+            return msg
+        if not self.manifest_exists:
+            msg = (
+                    f"Checking {on}{self.manifest_path}{off} for instances of "
+                    f"{on}{self.manifest_filename}{off}\n"
+                    f"Manifest file(s) not found"
             )
             return msg
         manifest_errors = '\n'.join(self.manifest_folders_with_no_manifest_file)
@@ -103,17 +110,18 @@ class Report():
         return msg
 
     def _check_manifest(self):
-        self.manifest_exists = os.path.exists(self.manifest_path)
-        if self.manifest_exists:
+        if os.path.exists(self.manifest_path):
             self._walk_manifest()
             self._walk_base_directory()
             self._check_manifest_files()
 
     def _walk_manifest(self):
+        self.manifest_exists = False
         for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
             self.manifest_folders.append(folder_name)
             if self.manifest_filename in filenames:
                 self.manifest_folders_with_manifest_file.append(folder_name)
+                self.manifest_exists = True
             else:
                 self.manifest_folders_with_no_manifest_file.append(folder_name)
 
