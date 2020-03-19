@@ -43,6 +43,9 @@ class Manifest():
             if self.manifest_filename in filenames:
                 manifest_exists = True
                 filepath = os.path.join(folder_name, self.manifest_filename)
+                if os.path.islink(filepath):
+                    print(f"Halted - symbolic link at {filepath}")
+                    return
                 try:
                     os.unlink(filepath)
                     print(f"Deleting {filepath}")
