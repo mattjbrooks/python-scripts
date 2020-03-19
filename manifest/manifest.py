@@ -30,6 +30,29 @@ class Manifest():
             print(folder_name)
         print("Done")
 
+    def delete_manifest(self):
+        if not self.manifest_filename.endswith(".json"):
+            raise ValueError(
+                    f"Non-manifest filename {self.manifest_filename}"
+                    f" passed for deletion")
+        if not os.path.isdir(config.MANIFEST_ROOT):
+            print("Manifest directory not found")
+            return
+        manifest_exists = False
+        for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
+            if self.manifest_filename in filenames:
+                manifest_exists = True
+                filepath = os.path.join(folder_name, self.manifest_filename)
+                try:
+                    os.unlink(filepath)
+                    print(f"Deleting {filepath}")
+                except:
+                    print(f"Error while deleting {filepath}")
+        if manifest_exists:
+            print("Done")
+        else:
+            print(f"{self.manifest_filename} not found in manifest directory")
+
     def _write_manifest_file(self, folder, manifest):
         filepath = os.path.join(folder, self.manifest_filename)
         with open(filepath, 'w') as f:
@@ -55,8 +78,7 @@ class Report():
 
     def __str__(self):
         return '\n'.join(
-                [f"{key}: {value}" for key, value in self.__dict__.items()]
-        )
+                [f"{key}: {value}" for key, value in self.__dict__.items()])
 
     def log(self, color=False):
         ANSI_cyan = "\x1b[36m"

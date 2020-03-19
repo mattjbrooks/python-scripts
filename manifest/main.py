@@ -13,6 +13,8 @@ def main():
         create_manifest()
     elif sys.argv[1] == "check":
         check_manifest()
+    elif sys.argv[1] == "delete":
+        delete_manifest()
     else:
         display_help()
 
@@ -21,6 +23,15 @@ def create_manifest():
     manifest = Manifest()
     manifest.create_manifest()
 
+
+def delete_manifest():
+    if len(sys.argv) == 3:
+        date = check_date(sys.argv[2])
+        manifest = Manifest(manifest_filename=f"{date}.json")
+        manifest.delete_manifest()
+    else:
+        manifest = Manifest()
+        manifest.delete_manifest()
 
 def check_manifest():
     if len(sys.argv) == 3:
@@ -49,7 +60,7 @@ def check_date(some_string):
 
 
 def display_date_format_msg():
-    print("Usage: manifest check YYYY-MM-DD")
+    print(f"Usage: manifest {sys.argv[1]} YYYY-MM-DD")
     sys.exit()
 
 
@@ -59,6 +70,8 @@ def display_help():
     Commands:
         create          Create manifest in current directory
         check [date]    Check manifest - accepts optional date of format YYYY-MM-DD 
+                        uses current date if none is given
+        delete [date]   Delete manifest - accepts optional date of format YYYY-MM-DD
                         uses current date if none is given"""
     print(help_msg)
     sys.exit()
