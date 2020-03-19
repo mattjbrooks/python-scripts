@@ -48,10 +48,22 @@ class Manifest():
                     print(f"Deleting {filepath}")
                 except:
                     print(f"Error while deleting {filepath}")
-        if manifest_exists:
-            print("Done")
-        else:
+        if not manifest_exists:
             print(f"{self.manifest_filename} not found in manifest directory")
+            return
+        folders_without_files = []
+        for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
+            if len(filenames) == 0:
+                folders_without_files.append(folder_name)
+        folders_without_files.sort(key=len, reverse=True)
+        for folder in folders_without_files:
+            if len(os.listdir(folder)) == 0:
+                try:
+                    os.rmdir(folder)
+                    print(f"Deleting {folder}")
+                except:
+                    print(f"Error while deleting directory {folder}")
+        print("Done")
 
     def _write_manifest_file(self, folder, manifest):
         filepath = os.path.join(folder, self.manifest_filename)
