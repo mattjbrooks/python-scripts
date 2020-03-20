@@ -170,7 +170,6 @@ class Report():
                     self.manifest_errors.add(folder_without_file)
                     break
 
-
     def _walk_base_directory(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
             relative_path = os.path.relpath(folder_name, self.base_directory)
