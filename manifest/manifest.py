@@ -85,6 +85,7 @@ class Report():
         self.manifest_folders = []
         self.manifest_folders_with_manifest_file = []
         self.manifest_folders_with_no_manifest_file = []
+        self.manifest_errors = set()
         self.unrecorded_files = []
         self.unrecorded_folders = []
         self.recorded_but_missing_files = []
@@ -117,7 +118,7 @@ class Report():
                     f"Manifest file(s) not found"
             )
             return msg
-        manifest_errors = '\n'.join(self.manifest_folders_with_no_manifest_file)
+        manifest_errors = '\n'.join(sorted(self.manifest_errors, key=len))
         unrecorded_files = '\n'.join(self.unrecorded_files)
         unrecorded_folders = '\n'.join(self.unrecorded_folders)
         missing_files = '\n'.join(self.recorded_but_missing_files)
@@ -135,10 +136,10 @@ class Report():
         if hash_mismatches:
             msg += f"{on}Hash mismatches:{off}\n{hash_mismatches}\n"
         if manifest_errors:
-            plural = 's' if len(self.manifest_folders_with_no_manifest_file) > 1 else ""
+            plural = 's' if len(self.manifest_errors) > 1 else ""
             msg += (
                     f"{warn}WARNING: Manifest error - "
-                    f"no manifest file for folder{plural}:{off}\n"
+                    f"missing manifest file for folder{plural}:{off}\n"
                     f"{manifest_errors}"
             )
         msg = msg.rstrip('\n')
@@ -161,6 +162,14 @@ class Report():
                 self.manifest_exists = True
             else:
                 self.manifest_folders_with_no_manifest_file.append(folder_name)
+                if not filenames:
+                    self.manifest_errors.add(folder_name)
+        for folder_without_file in self.manifest_folders_with_no_manifest_file:
+            for folder_with_file in self.manifest_folders_with_manifest_file:
+                if folder_with_file.startswith(folder_without_file):
+                    self.manifest_errors.add(folder_without_file)
+                    break
+
 
     def _walk_base_directory(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
