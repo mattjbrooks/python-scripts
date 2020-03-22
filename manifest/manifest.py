@@ -11,6 +11,10 @@ class Manifest():
         self.manifest_filename = f"{current_date()}.json" if (manifest_filename
                 == None) else manifest_filename
 
+    def __repr__(self):
+        return (f"{self.__class__.__name__}("
+                f"{self.base_directory!r}, {self.manifest_filename!r})")
+
     def create_manifest(self):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
             relative_path = os.path.relpath(folder_name, self.base_directory)
@@ -91,6 +95,12 @@ class Report():
         self.recorded_but_missing_files = []
         self.recorded_but_missing_folders = []
         self._check_manifest()
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}(" +
+                ", ".join([f"'{key}={value}'" 
+                    for key, value in self.__dict__.items()]) + ")"
+        )
 
     def __str__(self):
         return '\n'.join(
