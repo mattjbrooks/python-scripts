@@ -1,21 +1,15 @@
-import datetime
-import hashlib
-import json
 import os
 import config
-
+import utility
 
 class Manifest():
-    def __init__(self, base_directory=os.getcwd(), manifest_filename=None):
+    def __init__(self, base_directory=os.getcwd()):
         self.base_directory = base_directory
-        self.manifest_filename = f"{current_date()}.json" if (manifest_filename
-                == None) else manifest_filename
 
     def __repr__(self):
-        return (f"{self.__class__.__name__}("
-                f"{self.base_directory!r}, {self.manifest_filename!r})")
+        return (f"{self.__class__.__name__}({self.base_directory!r})")
 
-    def create_manifest(self):
+    def create_manifest(self, manifest_filename=f"{utility.current_date()}.json"):
         for folder_name, subfolders, filenames in os.walk(self.base_directory):
             relative_path = os.path.relpath(folder_name, self.base_directory)
             if relative_path.startswith(config.MANIFEST_ROOT):
@@ -23,30 +17,31 @@ class Manifest():
             manifest = {}
             for filename in filenames:
                 filepath = os.path.join(folder_name, filename)
-                manifest[filename] = hashfile(filepath)
+                manifest[filename] = utility.hashfile(filepath)
             if relative_path == '.':
                 write_directory = config.MANIFEST_ROOT
             else:
                 write_directory = os.path.join(config.MANIFEST_ROOT, relative_path)
             if not os.path.exists(write_directory):
                 os.mkdir(write_directory)
-            self._write_manifest_file(write_directory, manifest)
+            filepath = os.path.join(write_directory, manifest_filename)
+            utility.write_json(filepath, manifest)
             print(folder_name)
         print("Done")
 
-    def delete_manifest(self):
-        if not self.manifest_filename.endswith(".json"):
+    def delete_manifest(self, manifest_filename=f"{utility.current_date()}.json"):
+        if not manifest_filename.endswith(".json"):
             raise ValueError(
-                    f"Non-manifest filename {self.manifest_filename}"
+                    f"Non-manifest filename {manifest_filename}"
                     f" passed for deletion")
         if not os.path.isdir(config.MANIFEST_ROOT):
             print("Manifest directory not found")
             return
         manifest_exists = False
         for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
-            if self.manifest_filename in filenames:
+            if manifest_filename in filenames:
                 manifest_exists = True
-                filepath = os.path.join(folder_name, self.manifest_filename)
+                filepath = os.path.join(folder_name, manifest_filename)
                 if os.path.islink(filepath):
                     print(f"Halted - symbolic link at {filepath}")
                     return
@@ -56,7 +51,7 @@ class Manifest():
                 except:
                     print(f"Error while deleting {filepath}")
         if not manifest_exists:
-            print(f"{self.manifest_filename} not found in manifest directory")
+            print(f"{manifest_filename} not found in manifest directory")
             return
         folders_without_files = []
         for folder_name, subfolders, filenames in os.walk(config.MANIFEST_ROOT):
@@ -72,16 +67,11 @@ class Manifest():
                     print(f"Error while deleting directory {folder}")
         print("Done")
 
-    def _write_manifest_file(self, folder, manifest):
-        filepath = os.path.join(folder, self.manifest_filename)
-        with open(filepath, 'w') as f:
-            json.dump(manifest, f)
-
 
 class Report():
     def __init__(self, base_directory=os.getcwd(), manifest_filename=None):
         self.base_directory = base_directory
-        self.manifest_filename = f"{current_date()}.json" if (manifest_filename
+        self.manifest_filename = f"{utility.current_date()}.json" if (manifest_filename
                 == None) else manifest_filename
         self.manifest_path = os.path.join(base_directory, config.MANIFEST_ROOT)
         self.manifest_exists = None
@@ -204,7 +194,8 @@ class Report():
 
     def _check_manifest_files(self):
         for folder in self.manifest_folders_with_manifest_file:
-            manifest = self._load_manifest_file(folder)
+            filepath = os.path.join(folder, self.manifest_filename)
+            manifest = utility.load_json(filepath)
             matching_folder = os.path.relpath(folder, config.MANIFEST_ROOT)
             if not os.path.isdir(matching_folder):
                 self.recorded_but_missing_folders.append(matching_folder)
@@ -215,7 +206,7 @@ class Report():
             filepath = os.path.join(folder, filename)
             if os.path.isfile(filepath):
                 manifest_hash = manifest[filename]
-                file_hash = hashfile(filepath)
+                file_hash = utility.hashfile(filepath)
                 if manifest_hash != file_hash:
                     self.hash_mismatches.append(filepath)
             else:
@@ -226,23 +217,3 @@ class Report():
                     if entry.is_file() and entry.name not in manifest:
                         filepath = os.path.join(folder, entry.name)
                         self.unrecorded_files.append(filepath)
-
-    def _load_manifest_file(self, folder):
-        filepath = os.path.join(folder, self.manifest_filename)
-        with open(filepath, 'r') as f:
-            manifest = json.load(f)
-        return manifest
-
-
-def current_date():
-    return datetime.datetime.now().strftime("%Y-%m-%d")
-
-
-def hashfile(filepath, blocksize = 65536):
-    hash_obj = hashlib.sha256()
-    with open(filepath, 'rb') as f:
-        chunk = f.read(blocksize)
-        while len(chunk):
-            hash_obj.update(chunk)
-            chunk = f.read(blocksize)
-    return(hash_obj.hexdigest())
